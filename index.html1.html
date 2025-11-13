@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アルバム作成・共有アプリ</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --light-color: #f5f5f5;
+            --dark-color: #333;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+        
+        nav li {
+            margin: 0 15px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 10px;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .preview-item {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-item .remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .album-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .album-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .album-thumbnail {
+            height: 180px;
+            overflow: hidden;
+        }
+        
+        .album-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .album-info {
+            padding: 15px;
+        }
+        
+        .album-info h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .album-info p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .album-actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .share-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .twitter {
+            background: #1DA1F2;
+        }
+        
+        .facebook {
+            background: #4267B2;
+        }
+        
+        .line {
+            background: #00B900;
+        }
+        
+        .copy-link {
+            background: #6c757d;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .album-view {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        .album-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .album-images img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .album-details {
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .shared-album-view {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .shared-album-title {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .shared-album-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .shared-album-images img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .shared-album-description {
+            margin: 20px 0;
+            font-size: 18px;
+            color: #555;
+        }
+        
+        .shared-album-meta {
+            color: #777;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .album-view {
+                grid-template-columns: 1fr;
+            }
+            
+            .album-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .shared-album-images {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>アルバム作成・共有アプリ</h1>
+            <nav>
+                <ul>
+                    <li><a href="#" class="nav-link active" data-tab="create-album">アルバム作成</a></li>
+                    <li><a href="#" class="nav-link" data-tab="my-albums">マイアルバム</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- アルバム作成タブ -->
+        <section id="create-album" class="tab-content active">
+            <div class="card">
+                <h2>新しいアルバムを作成</h2>
+                <form id="album-form">
+                    <div class="form-group">
+                        <label for="album-title">アルバムタイトル</label>
+                        <input type="text" id="album-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="album-description">説明</label>
+                        <textarea id="album-description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>画像を追加</label>
+                        <div class="upload-area" id="upload-area">
+                            <i>📁</i>
+                            <p>クリックして画像を選択、またはドラッグ＆ドロップ</p>
+                            <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
+                        </div>
+                        <div class="image-preview" id="image-preview"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">アルバムを作成</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- マイアルバムタブ -->
+        <section id="my-albums" class="tab-content">
+            <div class="card">
+                <h2>マイアルバム</h2>
+                <div class="album-grid" id="album-grid">
+                    <!-- アルバムカードがここに動的に追加されます -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 共有アルバム閲覧タブ -->
+        <section id="shared-album" class="tab-content">
+            <div class="card">
+                <div class="shared-album-view" id="shared-album-view">
+                    <!-- 共有アルバムの内容がここに表示されます -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- アルバム表示モーダル -->
+    <div class="modal" id="album-modal">
+        <div class="modal-content">
+            <button class="close-modal" id="close-modal">&times;</button>
+            <div class="album-view">
+                <div class="album-images" id="modal-album-images">
+                    <!-- アルバム画像がここに表示されます -->
+                </div>
+                <div class="album-details">
+                    <h2 id="modal-album-title">アルバムタイトル</h2>
+                    <p id="modal-album-description">アルバムの説明</p>
+                    <p id="modal-album-date">作成日: 2023年10月1日</p>
+                    
+                    <h3>共有</h3>
+                    <div class="share-options">
+                        <a href="#" class="share-btn twitter" id="share-twitter" target="_blank">Twitter</a>
+                        <a href="#" class="share-btn facebook" id="share-facebook" target="_blank">Facebook</a>
+                        <a href="#" class="share-btn line" id="share-line" target="_blank">LINE</a>
+                        <button class="share-btn copy-link" id="copy-link">リンクをコピー</button>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-danger" id="delete-album">アルバムを削除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // アプリの状態を管理
+        const state = {
+            albums: JSON.parse(localStorage.getItem('albums')) || [],
+            currentImages: [],
+            currentAlbumId: null
+        };
+
+        // DOM要素の取得
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const albumForm = document.getElementById('album-form');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const albumGrid = document.getElementById('album-grid');
+        const albumModal = document.getElementById('album-modal');
+        const closeModal = document.getElementById('close-modal');
+        const modalAlbumTitle = document.getElementById('modal-album-title');
+        const modalAlbumDescription = document.getElementById('modal-album-description');
+        const modalAlbumDate = document.getElementById('modal-album-date');
+        const modalAlbumImages = document.getElementById('modal-album-images');
+        const deleteAlbumBtn = document.getElementById('delete-album');
+        const shareTwitter = document.getElementById('share-twitter');
+        const shareFacebook = document.getElementById('share-facebook');
+        const shareLine = document.getElementById('share-line');
+        const copyLinkBtn = document.getElementById('copy-link');
+        const sharedAlbumView = document.getElementById('shared-album-view');
+
+        // URLパラメータをチェックして共有アルバムを表示
+        function checkUrlForSharedAlbum() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const albumId = urlParams.get('album');
+            
+            if (albumId) {
+                // 共有アルバムを表示
+                showSharedAlbum(albumId);
+                
+                // 共有アルバムタブをアクティブに
+                navLinks.forEach(link => link.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // 共有アルバムタブを追加（まだない場合）
+                if (!document.querySelector('[data-tab="shared-album"]')) {
+                    const nav = document.querySelector('nav ul');
+                    const sharedTab = document.createElement('li');
+                    sharedTab.innerHTML = '<a href="#" class="nav-link active" data-tab="shared-album">共有アルバム</a>';
+                    nav.appendChild(sharedTab);
+                    
+                    // 新しいタブのイベントリスナーを追加
+                    document.querySelector('[data-tab="shared-album"]').addEventListener('click', handleTabClick);
+                }
+                
+                document.getElementById('shared-album').classList.add('active');
+            }
+        }
+
+        // 共有アルバムを表示
+        function showSharedAlbum(albumId) {
+            const album = state.albums.find(a => a.id === albumId);
+            
+            if (!album) {
+                sharedAlbumView.innerHTML = '<p>アルバムが見つかりませんでした。削除されたか、URLが間違っている可能性があります。</p>';
+                return;
+            }
+            
+            sharedAlbumView.innerHTML = `
+                <h1 class="shared-album-title">${album.title}</h1>
+                <p class="shared-album-description">${album.description || '説明なし'}</p>
+                <p class="shared-album-meta">作成日: ${album.createdAt} | ${album.images.length}枚の画像</p>
+                <div class="shared-album-images">
+                    ${album.images.map(img => `<img src="${img}" alt="${album.title}">`).join('')}
+                </div>
+                <div style="margin-top: 30px;">
+                    <a href="#" class="btn" id="back-to-app">アプリに戻る</a>
+                </div>
+            `;
+            
+            document.getElementById('back-to-app').addEventListener('click', (e) => {
+                e.preventDefault();
+                // URLからパラメータを削除
+                window.history.replaceState({}, document.title, window.location.pathname);
+                // マイアルバムタブに戻る
+                document.querySelector('[data-tab="my-albums"]').click();
+            });
+        }
+
+        // タブ切り替え
+        function handleTabClick(e) {
+            e.preventDefault();
+            const targetTab = this.getAttribute('data-tab');
+            
+            // アクティブなタブを更新
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            
+            // タブコンテンツを表示
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === targetTab) {
+                    content.classList.add('active');
+                }
+            });
+            
+            // マイアルバムタブを表示する場合はアルバムを再読み込み
+            if (targetTab === 'my-albums') {
+                renderAlbums();
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', handleTabClick);
+        });
+
+        // ファイルアップロードの処理
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#4a6fa5';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#ddd';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ddd';
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFiles(e.target.files);
+            }
+        });
+
+        // ファイル処理関数
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                if (!file.type.match('image.*')) continue;
+                
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    const imgSrc = e.target.result;
+                    state.currentImages.push(imgSrc);
+                    renderImagePreviews();
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 画像プレビューの表示
+        function renderImagePreviews() {
+            imagePreview.innerHTML = '';
+            
+            state.currentImages.forEach((imgSrc, index) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove';
+                removeBtn.innerHTML = '×';
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    state.currentImages.splice(index, 1);
+                    renderImagePreviews();
+                });
+                
+                previewItem.appendChild(img);
+                previewItem.appendChild(removeBtn);
+                imagePreview.appendChild(previewItem);
+            });
+        }
+
+        // アルバム作成フォームの送信
+        albumForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('album-title').value;
+            const description = document.getElementById('album-description').value;
+            
+            if (state.currentImages.length === 0) {
+                alert('少なくとも1枚の画像を追加してください');
+                return;
+            }
+            
+            const newAlbum = {
+                id: Date.now().toString(),
+                title,
+                description,
+                images: [...state.currentImages],
+                createdAt: new Date().toLocaleDateString('ja-JP')
+            };
+            
+            state.albums.push(newAlbum);
+            saveAlbums();
+            
+            // フォームをリセット
+            albumForm.reset();
+            state.currentImages = [];
+            renderImagePreviews();
+            
+            alert('アルバムが作成されました！');
+            
+            // マイアルバムタブに切り替え
+            document.querySelector('[data-tab="my-albums"]').click();
+        });
+
+        // アルバムの表示
+        function renderAlbums() {
+            albumGrid.innerHTML = '';
+            
+            if (state.albums.length === 0) {
+                albumGrid.innerHTML = '<p>アルバムがありません。新しいアルバムを作成しましょう！</p>';
+                return;
+            }
+            
+            state.albums.forEach(album => {
+                const albumCard = document.createElement('div');
+                albumCard.className = 'album-card';
+                
+                albumCard.innerHTML = `
+                    <div class="album-thumbnail">
+                        <img src="${album.images[0]}" alt="${album.title}">
+                    </div>
+                    <div class="album-info">
+                        <h3>${album.title}</h3>
+                        <p>${album.description || '説明なし'}</p>
+                        <p>${album.images.length}枚の画像</p>
+                        <div class="album-actions">
+                            <button class="btn view-album" data-id="${album.id}">表示</button>
+                            <button class="btn btn-danger delete-album" data-id="${album.id}">削除</button>
+                        </div>
+                    </div>
+                `;
+                
+                albumGrid.appendChild(albumCard);
+            });
+            
+            // アルバム表示イベントの設定
+            document.querySelectorAll('.view-album').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const albumId = e.target.getAttribute('data-id');
+                    openAlbumModal(albumId);
+                });
+            });
+            
+            // アルバム削除イベントの設定
+            document.querySelectorAll('.delete-album').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const albumId = e.target.getAttribute('data-id');
+                    if (confirm('このアルバムを削除しますか？')) {
+                        deleteAlbum(albumId);
+                    }
+                });
+            });
+        }
+
+        // アルバムモーダルを開く
+        function openAlbumModal(albumId) {
+            const album = state.albums.find(a => a.id === albumId);
+            if (!album) return;
+            
+            state.currentAlbumId = albumId;
+            modalAlbumTitle.textContent = album.title;
+            modalAlbumDescription.textContent = album.description || '説明なし';
+            modalAlbumDate.textContent = `作成日: ${album.createdAt}`;
+            
+            // アルバム画像の表示
+            modalAlbumImages.innerHTML = '';
+            album.images.forEach(imgSrc => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                modalAlbumImages.appendChild(img);
+            });
+            
+            // 共有リンクの設定
+            const shareUrl = `${window.location.origin}${window.location.pathname}?album=${albumId}`;
+            const shareText = `私のアルバム「${album.title}」をチェックしてください！`;
+            
+            shareTwitter.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+            shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+            shareLine.href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}`;
+            
+            copyLinkBtn.onclick = () => {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('リンクをクリップボードにコピーしました！');
+                });
+            };
+            
+            albumModal.style.display = 'flex';
+        }
+
+        // アルバムモーダルを閉じる
+        closeModal.addEventListener('click', () => {
+            albumModal.style.display = 'none';
+        });
+
+        // アルバムの削除
+        deleteAlbumBtn.addEventListener('click', () => {
+            if (confirm('このアルバムを完全に削除しますか？この操作は元に戻せません。')) {
+                deleteAlbum(state.currentAlbumId);
+                albumModal.style.display = 'none';
+            }
+        });
+
+        // アルバム削除関数
+        function deleteAlbum(albumId) {
+            state.albums = state.albums.filter(album => album.id !== albumId);
+            saveAlbums();
+            renderAlbums();
+        }
+
+        // アルバムデータをローカルストレージに保存
+        function saveAlbums() {
+            localStorage.setItem('albums', JSON.stringify(state.albums));
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAlbums();
+            checkUrlForSharedAlbum();
+        });
+    </script>
+</body>
+</html>
