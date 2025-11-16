@@ -634,6 +634,29 @@
             currentAlbumId: null
         };
 
+        // サンプルアルバムデータ（デモ用）
+        const sampleAlbums = [
+            {
+                id: "sample-album-1",
+                title: "サンプルアルバム",
+                description: "これは共有リンクの動作を確認するためのサンプルアルバムです",
+                images: [
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzRhNmZhNSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2FtcGxlIEltYWdlPC90ZXh0Pgo8L3N2Zz4K",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzZiOGNiYyIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2FtcGxlIDI8L3RleHQ+Cjwvc3ZnPgo=",
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzI4YTc0NSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2FtcGxlIDM8L3RleHQ+Cjwvc3ZnPgo="
+                ],
+                creatorId: "sample-user",
+                creatorName: "サンプルユーザー",
+                createdAt: "2023年10月1日"
+            }
+        ];
+
+        // 初回起動時にサンプルアルバムを追加
+        if (state.albums.length === 0) {
+            state.albums = [...sampleAlbums];
+            localStorage.setItem('albums', JSON.stringify(state.albums));
+        }
+
         // DOM要素の取得
         const userInfo = document.getElementById('user-info');
         const navTabs = document.getElementById('nav-tabs');
@@ -837,7 +860,9 @@
 
         // 共有アルバムを表示
         function showSharedAlbum(albumId) {
-            const album = state.albums.find(a => a.id === albumId);
+            // ローカルストレージからアルバムを取得
+            const storedAlbums = JSON.parse(localStorage.getItem('albums')) || [];
+            const album = storedAlbums.find(a => a.id === albumId);
             
             if (!album) {
                 sharedAlbumView.innerHTML = `
@@ -845,6 +870,8 @@
                         <i>❌</i>
                         <h2>アルバムが見つかりません</h2>
                         <p>削除されたか、URLが間違っている可能性があります。</p>
+                        <p>共有リンク: ${window.location.href}</p>
+                        <p>アルバムID: ${albumId}</p>
                         <a href="#" class="btn" id="back-to-app" style="margin-top: 15px;">アプリに戻る</a>
                     </div>
                 `;
