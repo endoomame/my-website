@@ -840,6 +840,8 @@
             const albumId = urlParams.get('album');
             
             if (albumId) {
+                console.log('共有リンクからアクセスしました。アルバムID:', albumId);
+                
                 // 共有アルバムを表示
                 showSharedAlbum(albumId);
                 
@@ -864,14 +866,18 @@
             const storedAlbums = JSON.parse(localStorage.getItem('albums')) || [];
             const album = storedAlbums.find(a => a.id === albumId);
             
+            console.log('検索中のアルバムID:', albumId);
+            console.log('ローカルストレージのアルバム:', storedAlbums);
+            
             if (!album) {
                 sharedAlbumView.innerHTML = `
                     <div class="empty-state">
                         <i>❌</i>
                         <h2>アルバムが見つかりません</h2>
                         <p>削除されたか、URLが間違っている可能性があります。</p>
-                        <p>共有リンク: ${window.location.href}</p>
-                        <p>アルバムID: ${albumId}</p>
+                        <p><strong>現在のURL:</strong> ${window.location.href}</p>
+                        <p><strong>検索中のアルバムID:</strong> ${albumId}</p>
+                        <p><strong>利用可能なアルバムID:</strong> ${storedAlbums.map(a => a.id).join(', ')}</p>
                         <a href="#" class="btn" id="back-to-app" style="margin-top: 15px;">アプリに戻る</a>
                     </div>
                 `;
@@ -1126,8 +1132,9 @@
                 modalAlbumImages.appendChild(img);
             });
             
-            // 共有リンクの設定
-            const shareUrl = `${window.location.origin}${window.location.pathname}?album=${albumId}`;
+            // 共有リンクの設定 - GitHub Pages用に絶対URLを使用
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${baseUrl}?album=${albumId}`;
             const shareText = `${album.creatorName}さんのアルバム「${album.title}」をチェックしてください！`;
             
             shareTwitter.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
