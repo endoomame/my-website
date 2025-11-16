@@ -3,145 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>アルバム作成・共有アプリ</title>
+    <title>匿名掲示板</title>
     <style>
-        :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #6b8cbc;
-            --light-color: #f5f5f5;
-            --dark-color: #333;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         
         body {
-            background-color: #f9f9f9;
-            color: var(--dark-color);
+            background-color: #f5f5f5;
+            color: #333;
             line-height: 1.6;
+            padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        header h1 {
-            margin-bottom: 0;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-info span {
-            font-weight: bold;
-        }
-        
-        nav ul {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-        
-        nav li {
-            margin: 5px 15px;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        
-        nav a:hover, nav a.active {
-            background-color: rgba(255,255,255,0.2);
-        }
-        
-        .tab-content {
-            display: none;
-            padding: 20px 0;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .card {
-            background: white;
+            background-color: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
             margin-bottom: 20px;
+            color: #2c3e50;
         }
         
-        .btn {
-            display: inline-block;
-            background: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s;
-            text-decoration: none;
-        }
-        
-        .btn:hover {
-            background: var(--secondary-color);
-        }
-        
-        .btn-danger {
-            background: var(--danger-color);
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-success {
-            background: var(--success-color);
-        }
-        
-        .btn-success:hover {
-            background: #218838;
-        }
-        
-        .btn-warning {
-            background: var(--warning-color);
-            color: var(--dark-color);
-        }
-        
-        .btn-warning:hover {
-            background: #e0a800;
+        .post-form {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
         }
         
         .form-group {
@@ -154,10 +51,7 @@
             font-weight: bold;
         }
         
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        textarea {
+        input, textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -165,1023 +59,270 @@
             font-size: 16px;
         }
         
-        .upload-area {
-            border: 2px dashed #ddd;
-            border-radius: 8px;
-            padding: 40px 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: border-color 0.3s;
+        textarea {
+            min-height: 100px;
+            resize: vertical;
         }
         
-        .upload-area:hover {
-            border-color: var(--primary-color);
-        }
-        
-        .upload-area i {
-            font-size: 48px;
-            color: #ddd;
-            margin-bottom: 10px;
-        }
-        
-        .image-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .preview-item {
-            position: relative;
-            width: 150px;
-            height: 150px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .preview-item .remove {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255,255,255,0.8);
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .album-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .album-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        
-        .album-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .album-thumbnail {
-            height: 180px;
-            overflow: hidden;
-        }
-        
-        .album-thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .album-info {
-            padding: 15px;
-        }
-        
-        .album-info h3 {
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-        
-        .album-info p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        
-        .album-actions {
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .share-options {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .share-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 15px;
-            border-radius: 4px;
+        button {
+            background-color: #3498db;
             color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        
-        .twitter {
-            background: #1DA1F2;
-        }
-        
-        .facebook {
-            background: #4267B2;
-        }
-        
-        .line {
-            background: #00B900;
-        }
-        
-        .copy-link {
-            background: #6c757d;
             border: none;
-            cursor: pointer;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background: white;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 90%;
-            padding: 20px;
-            position: relative;
-        }
-        
-        .close-modal {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-        .album-view {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 20px;
-        }
-        
-        .album-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-        }
-        
-        .album-images img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .album-details {
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
-        }
-        
-        .shared-album-view {
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .shared-album-title {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-        
-        .shared-album-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .shared-album-images img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .shared-album-description {
-            margin: 20px 0;
-            font-size: 18px;
-            color: #555;
-        }
-        
-        .shared-album-meta {
-            color: #777;
-            margin-bottom: 20px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            display: block;
-        }
-        
-        .auth-forms {
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .auth-tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .auth-tab.active {
-            border-bottom-color: var(--primary-color);
-            font-weight: bold;
-        }
-        
-        .auth-form {
-            display: none;
-        }
-        
-        .auth-form.active {
-            display: block;
-        }
-        
-        .alert {
             padding: 10px 15px;
             border-radius: 4px;
-            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
         }
         
-        .alert-success {
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .posts-container {
+            margin-top: 20px;
+        }
+        
+        .post {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .post-content {
+            margin-bottom: 10px;
+        }
+        
+        .post-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .no-posts {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+        
+        .notification {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
         
-        .alert-error {
+        .error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .album-view {
-                grid-template-columns: 1fr;
-            }
-            
-            .album-grid {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-            
-            .shared-album-images {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            }
-        }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <h1>アルバム作成・共有アプリ</h1>
-                <div class="user-info" id="user-info">
-                    <!-- ログイン状態によって表示が変わります -->
-                </div>
+    <div class="container">
+        <h1>匿名掲示板</h1>
+        
+        <div class="post-form">
+            <h2>新規投稿</h2>
+            <div class="form-group">
+                <label for="name">名前（任意）:</label>
+                <input type="text" id="name" placeholder="匿名">
             </div>
-            <nav>
-                <ul id="nav-tabs">
-                    <!-- タブはログイン状態によって変わります -->
-                </ul>
-            </nav>
+            <div class="form-group">
+                <label for="content">投稿内容:</label>
+                <textarea id="content" placeholder="投稿内容を入力してください" required></textarea>
+            </div>
+            <button id="submit-btn">投稿する</button>
         </div>
-    </header>
-
-    <main class="container">
-        <!-- 認証タブ（非ログイン時） -->
-        <section id="auth" class="tab-content active">
-            <div class="card auth-forms">
-                <div class="auth-tabs">
-                    <div class="auth-tab active" data-auth-form="login">ログイン</div>
-                    <div class="auth-tab" data-auth-form="register">新規登録</div>
-                </div>
-                
-                <div id="login-form" class="auth-form active">
-                    <h2>ログイン</h2>
-                    <form id="login-form-element">
-                        <div class="form-group">
-                            <label for="login-email">メールアドレス</label>
-                            <input type="email" id="login-email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="login-password">パスワード</label>
-                            <input type="password" id="login-password" required>
-                        </div>
-                        <button type="submit" class="btn btn-success">ログイン</button>
-                    </form>
-                </div>
-                
-                <div id="register-form" class="auth-form">
-                    <h2>新規登録</h2>
-                    <form id="register-form-element">
-                        <div class="form-group">
-                            <label for="register-name">ユーザー名</label>
-                            <input type="text" id="register-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="register-email">メールアドレス</label>
-                            <input type="email" id="register-email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="register-password">パスワード</label>
-                            <input type="password" id="register-password" required minlength="6">
-                        </div>
-                        <button type="submit" class="btn btn-success">登録</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- アルバム作成タブ -->
-        <section id="create-album" class="tab-content">
-            <div class="card">
-                <h2>新しいアルバムを作成</h2>
-                <form id="album-form">
-                    <div class="form-group">
-                        <label for="album-title">アルバムタイトル</label>
-                        <input type="text" id="album-title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="album-description">説明</label>
-                        <textarea id="album-description" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>画像を追加</label>
-                        <div class="upload-area" id="upload-area">
-                            <i>📁</i>
-                            <p>クリックして画像を選択、またはドラッグ＆ドロップ</p>
-                            <input type="file" id="file-input" multiple accept="image/*" style="display: none;">
-                        </div>
-                        <div class="image-preview" id="image-preview"></div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-success">アルバムを作成</button>
-                </form>
-            </div>
-        </section>
-
-        <!-- マイアルバムタブ -->
-        <section id="my-albums" class="tab-content">
-            <div class="card">
-                <h2>マイアルバム</h2>
-                <div class="album-grid" id="album-grid">
-                    <!-- アルバムカードがここに動的に追加されます -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 共有アルバム閲覧タブ -->
-        <section id="shared-album" class="tab-content">
-            <div class="card">
-                <div class="shared-album-view" id="shared-album-view">
-                    <!-- 共有アルバムの内容がここに表示されます -->
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- アルバム表示モーダル -->
-    <div class="modal" id="album-modal">
-        <div class="modal-content">
-            <button class="close-modal" id="close-modal">&times;</button>
-            <div class="album-view">
-                <div class="album-images" id="modal-album-images">
-                    <!-- アルバム画像がここに表示されます -->
-                </div>
-                <div class="album-details">
-                    <h2 id="modal-album-title">アルバムタイトル</h2>
-                    <p id="modal-album-description">アルバムの説明</p>
-                    <p id="modal-album-date">作成日: 2023年10月1日</p>
-                    
-                    <h3>共有</h3>
-                    <div class="share-options">
-                        <a href="#" class="share-btn twitter" id="share-twitter" target="_blank">Twitter</a>
-                        <a href="#" class="share-btn facebook" id="share-facebook" target="_blank">Facebook</a>
-                        <a href="#" class="share-btn line" id="share-line" target="_blank">LINE</a>
-                        <button class="share-btn copy-link" id="copy-link">リンクをコピー</button>
-                    </div>
-                    
-                    <div style="margin-top: 20px;">
-                        <button class="btn btn-danger" id="delete-album">アルバムを削除</button>
-                    </div>
-                </div>
-            </div>
+        
+        <div class="posts-container" id="posts-container">
+            <!-- 投稿がここに表示されます -->
         </div>
     </div>
 
     <script>
-        // アプリの状態を管理
-        const state = {
-            currentUser: JSON.parse(localStorage.getItem('currentUser')) || null,
-            users: JSON.parse(localStorage.getItem('users')) || [],
-            albums: JSON.parse(localStorage.getItem('albums')) || [],
-            currentImages: [],
-            currentAlbumId: null
-        };
-
-        // サンプルアルバムデータ（デモ用）
-        const sampleAlbums = [
-            {
-                id: "sample-album-1",
-                title: "サンプルアルバム",
-                description: "これは共有リンクの動作を確認するためのサンプルアルバムです",
-                images: [
-                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzRhNmZhNSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2FtcGxlIEltYWdlPC90ZXh0Pgo8L3N2Zz4K",
-                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzZiOGNiYyIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2FtcGxlIDI8L3RleHQ+Cjwvc3ZnPgo=",
-                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzI4YTc0NSIvPgogIDx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+U2FtcGxlIDM8L3RleHQ+Cjwvc3ZnPgo="
-                ],
-                creatorId: "sample-user",
-                creatorName: "サンプルユーザー",
-                createdAt: "2023年10月1日"
-            }
-        ];
-
-        // 初回起動時にサンプルアルバムを追加
-        if (state.albums.length === 0) {
-            state.albums = [...sampleAlbums];
-            localStorage.setItem('albums', JSON.stringify(state.albums));
-        }
-
-        // DOM要素の取得
-        const userInfo = document.getElementById('user-info');
-        const navTabs = document.getElementById('nav-tabs');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const authTabs = document.querySelectorAll('.auth-tab');
-        const authForms = document.querySelectorAll('.auth-form');
-        const loginForm = document.getElementById('login-form-element');
-        const registerForm = document.getElementById('register-form-element');
-        const albumForm = document.getElementById('album-form');
-        const uploadArea = document.getElementById('upload-area');
-        const fileInput = document.getElementById('file-input');
-        const imagePreview = document.getElementById('image-preview');
-        const albumGrid = document.getElementById('album-grid');
-        const albumModal = document.getElementById('album-modal');
-        const closeModal = document.getElementById('close-modal');
-        const modalAlbumTitle = document.getElementById('modal-album-title');
-        const modalAlbumDescription = document.getElementById('modal-album-description');
-        const modalAlbumDate = document.getElementById('modal-album-date');
-        const modalAlbumImages = document.getElementById('modal-album-images');
-        const deleteAlbumBtn = document.getElementById('delete-album');
-        const shareTwitter = document.getElementById('share-twitter');
-        const shareFacebook = document.getElementById('share-facebook');
-        const shareLine = document.getElementById('share-line');
-        const copyLinkBtn = document.getElementById('copy-link');
-        const sharedAlbumView = document.getElementById('shared-album-view');
-
-        // 初期化
-        document.addEventListener('DOMContentLoaded', () => {
-            updateUI();
-            checkUrlForSharedAlbum();
-            setupAuthTabs();
-        });
-
-        // 認証タブの設定
-        function setupAuthTabs() {
-            authTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const formId = tab.getAttribute('data-auth-form');
-                    
-                    // アクティブなタブを更新
-                    authTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    // フォームを表示
-                    authForms.forEach(form => {
-                        form.classList.remove('active');
-                        if (form.id === `${formId}-form`) {
-                            form.classList.add('active');
-                        }
-                    });
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            // ローカルストレージから投稿を読み込む
+            loadPosts();
+            
+            // 投稿ボタンのイベントリスナー
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                submitPost();
             });
-        }
-
-        // ログインフォームの送信
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
             
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            const user = state.users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                state.currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                updateUI();
-                showAlert('ログインに成功しました！', 'success');
-            } else {
-                showAlert('メールアドレスまたはパスワードが正しくありません', 'error');
-            }
+            // Enterキーで投稿
+            document.getElementById('content').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    submitPost();
+                }
+            });
         });
-
-        // 登録フォームの送信
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+        
+        // 投稿を送信する関数
+        function submitPost() {
+            const nameInput = document.getElementById('name');
+            const contentInput = document.getElementById('content');
             
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
+            const name = nameInput.value.trim() || '匿名';
+            const content = contentInput.value.trim();
             
-            // メールアドレスの重複チェック
-            if (state.users.find(u => u.email === email)) {
-                showAlert('このメールアドレスは既に登録されています', 'error');
+            // バリデーション
+            if (!content) {
+                showNotification('投稿内容を入力してください', 'error');
                 return;
             }
             
-            const newUser = {
-                id: Date.now().toString(),
-                name,
-                email,
-                password
+            // 投稿オブジェクトを作成
+            const post = {
+                id: Date.now(), // 簡易的なID生成
+                name: name,
+                content: content,
+                timestamp: new Date().toLocaleString('ja-JP')
             };
             
-            state.users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(state.users));
-            
-            state.currentUser = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(newUser));
-            
-            updateUI();
-            showAlert('アカウントが作成されました！', 'success');
-        });
-
-        // ログアウト
-        function logout() {
-            state.currentUser = null;
-            localStorage.removeItem('currentUser');
-            updateUI();
-            showAlert('ログアウトしました', 'success');
-        }
-
-        // UIの更新
-        function updateUI() {
-            // ユーザー情報の表示
-            if (state.currentUser) {
-                userInfo.innerHTML = `
-                    <span>${state.currentUser.name} さん</span>
-                    <button class="btn btn-warning" id="logout-btn">ログアウト</button>
-                `;
-                
-                document.getElementById('logout-btn').addEventListener('click', logout);
-                
-                // ナビゲーションタブ
-                navTabs.innerHTML = `
-                    <li><a href="#" class="nav-link active" data-tab="create-album">アルバム作成</a></li>
-                    <li><a href="#" class="nav-link" data-tab="my-albums">マイアルバム</a></li>
-                `;
-                
-                // タブコンテンツ
-                document.getElementById('auth').classList.remove('active');
-                document.getElementById('create-album').classList.add('active');
-                
-                // アルバムを表示
-                renderAlbums();
-            } else {
-                userInfo.innerHTML = '<span>ゲストユーザー</span>';
-                
-                // ナビゲーションタブ
-                navTabs.innerHTML = '';
-                
-                // タブコンテンツ
-                tabContents.forEach(content => content.classList.remove('active'));
-                document.getElementById('auth').classList.add('active');
-                
-                // アルバムグリッドをクリア
-                albumGrid.innerHTML = '';
-            }
-            
-            // タブイベントリスナーの再設定
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', handleTabClick);
-            });
-        }
-
-        // アラート表示
-        function showAlert(message, type) {
-            // 既存のアラートを削除
-            const existingAlert = document.querySelector('.alert');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-            
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.textContent = message;
-            
-            document.querySelector('.container').insertBefore(alert, document.querySelector('main'));
-            
-            // 5秒後にアラートを削除
-            setTimeout(() => {
-                if (alert.parentNode) {
-                    alert.remove();
-                }
-            }, 5000);
-        }
-
-        // URLパラメータをチェックして共有アルバムを表示
-        function checkUrlForSharedAlbum() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const albumId = urlParams.get('album');
-            
-            if (albumId) {
-                console.log('共有リンクからアクセスしました。アルバムID:', albumId);
-                
-                // 共有アルバムを表示
-                showSharedAlbum(albumId);
-                
-                // 共有アルバムタブを追加（まだない場合）
-                if (!document.querySelector('[data-tab="shared-album"]')) {
-                    const sharedTab = document.createElement('li');
-                    sharedTab.innerHTML = '<a href="#" class="nav-link active" data-tab="shared-album">共有アルバム</a>';
-                    navTabs.appendChild(sharedTab);
-                    
-                    // 新しいタブのイベントリスナーを追加
-                    document.querySelector('[data-tab="shared-album"]').addEventListener('click', handleTabClick);
-                }
-                
-                // タブを切り替え
-                switchTab('shared-album');
-            }
-        }
-
-        // 共有アルバムを表示
-        function showSharedAlbum(albumId) {
-            // ローカルストレージからアルバムを取得
-            const storedAlbums = JSON.parse(localStorage.getItem('albums')) || [];
-            const album = storedAlbums.find(a => a.id === albumId);
-            
-            console.log('検索中のアルバムID:', albumId);
-            console.log('ローカルストレージのアルバム:', storedAlbums);
-            
-            if (!album) {
-                sharedAlbumView.innerHTML = `
-                    <div class="empty-state">
-                        <i>❌</i>
-                        <h2>アルバムが見つかりません</h2>
-                        <p>削除されたか、URLが間違っている可能性があります。</p>
-                        <p><strong>現在のURL:</strong> ${window.location.href}</p>
-                        <p><strong>検索中のアルバムID:</strong> ${albumId}</p>
-                        <p><strong>利用可能なアルバムID:</strong> ${storedAlbums.map(a => a.id).join(', ')}</p>
-                        <a href="#" class="btn" id="back-to-app" style="margin-top: 15px;">アプリに戻る</a>
-                    </div>
-                `;
-            } else {
-                sharedAlbumView.innerHTML = `
-                    <h1 class="shared-album-title">${album.title}</h1>
-                    <p class="shared-album-description">${album.description || '説明なし'}</p>
-                    <p class="shared-album-meta">作成者: ${album.creatorName} | 作成日: ${album.createdAt} | ${album.images.length}枚の画像</p>
-                    <div class="shared-album-images">
-                        ${album.images.map(img => `<img src="${img}" alt="${album.title}">`).join('')}
-                    </div>
-                    <div style="margin-top: 30px;">
-                        <a href="#" class="btn" id="back-to-app">アプリに戻る</a>
-                    </div>
-                `;
-            }
-            
-            document.getElementById('back-to-app').addEventListener('click', (e) => {
-                e.preventDefault();
-                // URLからパラメータを削除
-                window.history.replaceState({}, document.title, window.location.pathname);
-                // 適切なタブに戻る
-                if (state.currentUser) {
-                    switchTab('my-albums');
-                } else {
-                    switchTab('auth');
-                }
-            });
-        }
-
-        // タブ切り替え関数
-        function switchTab(tabName) {
-            // アクティブなタブを更新
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            const targetTab = document.querySelector(`[data-tab="${tabName}"]`);
-            if (targetTab) {
-                targetTab.classList.add('active');
-            }
-            
-            // タブコンテンツを表示
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.id === tabName) {
-                    content.classList.add('active');
-                }
-            });
-            
-            // マイアルバムタブを表示する場合はアルバムを再読み込み
-            if (tabName === 'my-albums') {
-                renderAlbums();
-            }
-        }
-
-        // タブ切り替え
-        function handleTabClick(e) {
-            e.preventDefault();
-            const targetTab = this.getAttribute('data-tab');
-            switchTab(targetTab);
-        }
-
-        // ファイルアップロードの処理
-        uploadArea.addEventListener('click', () => {
-            fileInput.click();
-        });
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#4a6fa5';
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.style.borderColor = '#ddd';
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#ddd';
-            
-            if (e.dataTransfer.files.length > 0) {
-                handleFiles(e.dataTransfer.files);
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFiles(e.target.files);
-            }
-        });
-
-        // ファイル処理関数
-        function handleFiles(files) {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (!file.type.match('image.*')) continue;
-                
-                const reader = new FileReader();
-                
-                reader.onload = (e) => {
-                    const imgSrc = e.target.result;
-                    state.currentImages.push(imgSrc);
-                    renderImagePreviews();
-                };
-                
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // 画像プレビューの表示
-        function renderImagePreviews() {
-            imagePreview.innerHTML = '';
-            
-            if (state.currentImages.length === 0) {
-                return;
-            }
-            
-            state.currentImages.forEach((imgSrc, index) => {
-                const previewItem = document.createElement('div');
-                previewItem.className = 'preview-item';
-                
-                const img = document.createElement('img');
-                img.src = imgSrc;
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove';
-                removeBtn.innerHTML = '×';
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    state.currentImages.splice(index, 1);
-                    renderImagePreviews();
-                });
-                
-                previewItem.appendChild(img);
-                previewItem.appendChild(removeBtn);
-                imagePreview.appendChild(previewItem);
-            });
-        }
-
-        // アルバム作成フォームの送信
-        albumForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            if (!state.currentUser) {
-                showAlert('アルバムを作成するにはログインしてください', 'error');
-                return;
-            }
-            
-            const title = document.getElementById('album-title').value;
-            const description = document.getElementById('album-description').value;
-            
-            if (state.currentImages.length === 0) {
-                showAlert('少なくとも1枚の画像を追加してください', 'error');
-                return;
-            }
-            
-            const newAlbum = {
-                id: Date.now().toString(),
-                title,
-                description,
-                images: [...state.currentImages],
-                creatorId: state.currentUser.id,
-                creatorName: state.currentUser.name,
-                createdAt: new Date().toLocaleDateString('ja-JP')
-            };
-            
-            state.albums.push(newAlbum);
-            saveAlbums();
+            // ローカルストレージに保存
+            savePost(post);
             
             // フォームをリセット
-            albumForm.reset();
-            state.currentImages = [];
-            renderImagePreviews();
+            nameInput.value = '';
+            contentInput.value = '';
             
-            showAlert('アルバムが作成されました！', 'success');
+            // 投稿を表示
+            displayPost(post);
             
-            // マイアルバムタブに切り替え
-            switchTab('my-albums');
-        });
-
-        // アルバムの表示
-        function renderAlbums() {
-            albumGrid.innerHTML = '';
+            // 成功メッセージを表示
+            showNotification('投稿が完了しました', 'success');
+        }
+        
+        // 投稿をローカルストレージに保存する関数
+        function savePost(post) {
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];
+            posts.unshift(post); // 新しい投稿を先頭に追加
+            localStorage.setItem('posts', JSON.stringify(posts));
+        }
+        
+        // 投稿を読み込む関数
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            const postsContainer = document.getElementById('posts-container');
             
-            const userAlbums = state.albums.filter(album => album.creatorId === state.currentUser.id);
-            
-            if (userAlbums.length === 0) {
-                albumGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <i>📷</i>
-                        <h2>アルバムがありません</h2>
-                        <p>新しいアルバムを作成しましょう！</p>
-                    </div>
-                `;
+            // 投稿がない場合
+            if (posts.length === 0) {
+                postsContainer.innerHTML = '<div class="no-posts">まだ投稿がありません。最初の投稿をしてみましょう！</div>';
                 return;
             }
             
-            userAlbums.forEach(album => {
-                const albumCard = document.createElement('div');
-                albumCard.className = 'album-card';
-                
-                albumCard.innerHTML = `
-                    <div class="album-thumbnail">
-                        <img src="${album.images[0]}" alt="${album.title}">
-                    </div>
-                    <div class="album-info">
-                        <h3>${album.title}</h3>
-                        <p>${album.description || '説明なし'}</p>
-                        <p>${album.images.length}枚の画像</p>
-                        <div class="album-actions">
-                            <button class="btn view-album" data-id="${album.id}">表示</button>
-                            <button class="btn btn-danger delete-album" data-id="${album.id}">削除</button>
-                        </div>
-                    </div>
-                `;
-                
-                albumGrid.appendChild(albumCard);
-            });
-            
-            // アルバム表示イベントの設定
-            document.querySelectorAll('.view-album').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const albumId = e.target.getAttribute('data-id');
-                    openAlbumModal(albumId);
-                });
-            });
-            
-            // アルバム削除イベントの設定
-            document.querySelectorAll('.delete-album').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const albumId = e.target.getAttribute('data-id');
-                    if (confirm('このアルバムを削除しますか？')) {
-                        deleteAlbum(albumId);
-                    }
-                });
+            // 投稿を表示
+            postsContainer.innerHTML = '';
+            posts.forEach(post => {
+                displayPost(post);
             });
         }
-
-        // アルバムモーダルを開く
-        function openAlbumModal(albumId) {
-            const album = state.albums.find(a => a.id === albumId);
-            if (!album) return;
+        
+        // 投稿を表示する関数
+        function displayPost(post) {
+            const postsContainer = document.getElementById('posts-container');
             
-            state.currentAlbumId = albumId;
-            modalAlbumTitle.textContent = album.title;
-            modalAlbumDescription.textContent = album.description || '説明なし';
-            modalAlbumDate.textContent = `作成日: ${album.createdAt}`;
+            // 投稿要素を作成
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+            postElement.innerHTML = `
+                <div class="post-header">
+                    <span class="post-name">${escapeHtml(post.name)}</span>
+                    <span class="post-time">${post.timestamp}</span>
+                </div>
+                <div class="post-content">${escapeHtml(post.content).replace(/\n/g, '<br>')}</div>
+                <div class="post-footer">
+                    <button class="delete-btn" data-id="${post.id}">削除</button>
+                </div>
+            `;
             
-            // アルバム画像の表示
-            modalAlbumImages.innerHTML = '';
-            album.images.forEach(imgSrc => {
-                const img = document.createElement('img');
-                img.src = imgSrc;
-                modalAlbumImages.appendChild(img);
+            // 削除ボタンのイベントリスナー
+            const deleteBtn = postElement.querySelector('.delete-btn');
+            deleteBtn.addEventListener('click', function() {
+                deletePost(post.id);
             });
             
-            // 共有リンクの設定 - GitHub Pages用に絶対URLを使用
-            const baseUrl = window.location.origin + window.location.pathname;
-            const shareUrl = `${baseUrl}?album=${albumId}`;
-            const shareText = `${album.creatorName}さんのアルバム「${album.title}」をチェックしてください！`;
-            
-            shareTwitter.href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-            shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-            shareLine.href = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}`;
-            
-            copyLinkBtn.onclick = () => {
-                navigator.clipboard.writeText(shareUrl).then(() => {
-                    showAlert('リンクをクリップボードにコピーしました！', 'success');
-                }).catch(() => {
-                    // フォールバック
-                    const textArea = document.createElement('textarea');
-                    textArea.value = shareUrl;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textArea);
-                    showAlert('リンクをクリップボードにコピーしました！', 'success');
-                });
-            };
-            
-            albumModal.style.display = 'flex';
-        }
-
-        // アルバムモーダルを閉じる
-        closeModal.addEventListener('click', () => {
-            albumModal.style.display = 'none';
-        });
-
-        // アルバムの削除
-        deleteAlbumBtn.addEventListener('click', () => {
-            if (confirm('このアルバムを完全に削除しますか？この操作は元に戻せません。')) {
-                deleteAlbum(state.currentAlbumId);
-                albumModal.style.display = 'none';
+            // 投稿を先頭に追加
+            if (postsContainer.firstChild && postsContainer.firstChild.className === 'no-posts') {
+                postsContainer.innerHTML = '';
             }
-        });
-
-        // アルバム削除関数
-        function deleteAlbum(albumId) {
-            state.albums = state.albums.filter(album => album.id !== albumId);
-            saveAlbums();
-            renderAlbums();
+            
+            postsContainer.prepend(postElement);
         }
-
-        // アルバムデータをローカルストレージに保存
-        function saveAlbums() {
-            localStorage.setItem('albums', JSON.stringify(state.albums));
+        
+        // 投稿を削除する関数
+        function deletePost(id) {
+            if (!confirm('この投稿を削除しますか？')) {
+                return;
+            }
+            
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];
+            posts = posts.filter(post => post.id !== id);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            
+            // 表示を更新
+            loadPosts();
+            
+            // メッセージを表示
+            showNotification('投稿を削除しました', 'success');
+        }
+        
+        // 通知を表示する関数
+        function showNotification(message, type) {
+            // 既存の通知を削除
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // 新しい通知を作成
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            // 投稿フォームの前に挿入
+            const postForm = document.querySelector('.post-form');
+            postForm.parentNode.insertBefore(notification, postForm);
+            
+            // 3秒後に通知を削除
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // HTMLエスケープ関数
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 </body>
